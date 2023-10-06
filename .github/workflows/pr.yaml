@@ -1,0 +1,58 @@
+name: Latest Pull Request Test
+
+on:
+  push:
+    branches-ignore: [ "main", "master" ]
+    paths:
+      - '**.go'
+      - '**.yaml'
+      - '**.yml'
+      - '**.json'
+      - 'go.mod'
+      - 'go.sum'
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches-ignore: [ "main", "master" ]
+    paths:
+      - '**.go'
+      - '**.yaml'
+      - '**.yml'
+      - '**.json'
+      - 'go.mod'
+      - 'go.sum'
+
+concurrency:
+  # abort already running builds if pushed
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [stable, oldstable]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ matrix.go-version }}
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Vet
+      run: go vet ./...
+
+    - name: Code Coverage
+      run: go test ./... -timeout 300s -race -count=1 -covermode=atomic -coverprofile=coverage.out
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage.out
+        fail_ci_if_error: false
+        verbose: false
+
+
