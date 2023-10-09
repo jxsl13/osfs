@@ -13,6 +13,10 @@ import (
 	"github.com/jxsl13/osfs/fsi"
 )
 
+func (ofs *OsFs) lstat(name string) (fs.FileInfo, error) {
+	return os.Lstat(name)
+}
+
 func (ofs *OsFs) openFile(name string, flag int, perm fs.FileMode) (fsi.File, error) {
 	f, e := os.OpenFile(name, flag, perm)
 	if f == nil {

@@ -12,7 +12,7 @@ var (
 	_ fsi.Fs = (*OsFs)(nil)
 )
 
-func New() *OsFs {
+func New() (fs *OsFs) {
 	return &OsFs{}
 }
 
@@ -29,16 +29,12 @@ func (ofs *OsFs) stat(name string) (os.FileInfo, error) {
 	if err != nil {
 		return nil, &fs.PathError{Op: "stat", Path: name, Err: err}
 	}
-
+	// lstat implements the stat logic for windows
 	return fi, nil
 }
 
 func (ofs *OsFs) Lstat(name string) (os.FileInfo, error) {
 	return ofs.lstat(name)
-}
-
-func (ofs *OsFs) lstat(name string) (fs.FileInfo, error) {
-	return os.Lstat(name)
 }
 
 func (ofs *OsFs) Create(name string) (fsi.File, error) {
