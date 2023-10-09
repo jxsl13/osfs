@@ -7,6 +7,7 @@ import (
 )
 
 // followSymlinks follows all symlinks and returns the filepath of the final file in that chain which is not a symlink) and the file info of that same file
+// It calls lstat to get the file information
 func (ofs *OsFs) followSymlinks(name string) (string, fs.FileInfo, error) {
 	visited := make(map[string]struct{}, 2) // need at least 2 symlinks for a cycle
 	return ofs.followSymlinksWithVisited(name, visited)
@@ -32,8 +33,8 @@ func (ofs *OsFs) followSymlinksWithVisited(name string, visited map[string]struc
 	if err != nil {
 		return "", nil, err
 	}
-
-	return ofs.followSymlinksWithVisited(string(data), visited)
+	pointsTo := string(data)
+	return ofs.followSymlinksWithVisited(pointsTo, visited)
 }
 
 func (ofs *OsFs) readfile(name string) ([]byte, error) {

@@ -2,6 +2,7 @@ package testutils
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -229,7 +230,7 @@ func MkdirAll(t *testing.T, fs fsi.Fs, path string, perm os.FileMode) {
 	err := fs.MkdirAll(path, perm)
 	require.NoError(err)
 
-	err = IterateDirTree(fs, path, func(s string) error {
+	err = IterateDirTree(path, func(s string) error {
 		exists, err := Exists(fs, s)
 		if err != nil {
 			return err
@@ -238,6 +239,10 @@ func MkdirAll(t *testing.T, fs fsi.Fs, path string, perm os.FileMode) {
 		return nil
 	})
 	require.NoError(err)
+
+	fi, err := fs.Lstat(path)
+	require.NoError(err)
+	require.Equal(perm, fi.Mode().Perm(), fmt.Sprintf("expected %o got %o", perm, fi.Mode().Perm()))
 }
 
 func Mkdir(t *testing.T, fs fsi.Fs, path string, perm os.FileMode) error {
@@ -264,7 +269,7 @@ func ModeMustBeEqual(t *testing.T, a, b os.FileMode) {
 	a &= MaskChmod
 	b &= MaskChmod
 
-	require.Equalf(a, b, "expected: %0 got: %0", a, b)
+	require.Equalf(a, b, "expected: %o got: %o", a, b)
 }
 
 func Chmod(t *testing.T, ifs fsi.Fs, path string, perm os.FileMode) {
@@ -288,7 +293,7 @@ func Chmod(t *testing.T, ifs fsi.Fs, path string, perm os.FileMode) {
 
 	permAfter := fiAfter.Mode()
 
-	ModeMustBeEqual(t, perm, permAfter)
+	ModeMustBeEqual(t, perm.Perm(), permAfter.Perm())
 }
 
 func CountFiles(t *testing.T, ifs fsi.Fs, path string, expectedFilesAndDirs int) {
