@@ -4,7 +4,7 @@ go 1.21.0
 
 require (
 	github.com/hectane/go-acl v0.0.0-20230122075934-ca0b05cb1adb
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	golang.org/x/sys v0.17.0
 )
 
