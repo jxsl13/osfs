@@ -10,7 +10,7 @@ import (
 	"github.com/jxsl13/osfs/fsi"
 )
 
-func IterateDirTree(f fsi.Fs, path string, visitor func(subdir string) error) (err error) {
+func IterateDirTree(path string, visitor func(subdir string) error) (err error) {
 
 	i := len(path)
 	for i > 0 && os.IsPathSeparator(path[i-1]) { // Skip trailing path separator.
@@ -24,7 +24,7 @@ func IterateDirTree(f fsi.Fs, path string, visitor func(subdir string) error) (e
 
 	if j > 1 {
 		// Create parent.
-		err = IterateDirTree(f, path[:j-1], visitor)
+		err = IterateDirTree(path[:j-1], visitor)
 		if err != nil {
 			return err
 		}
