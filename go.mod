@@ -1,11 +1,11 @@
 module github.com/jxsl13/osfs
 
-go 1.21.0
+go 1.25.0
 
 require (
 	github.com/hectane/go-acl v0.0.0-20230122075934-ca0b05cb1adb
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/sys v0.20.0
+	golang.org/x/sys v0.44.0
 )
 
 require (
